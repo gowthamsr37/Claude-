@@ -1,8 +1,8 @@
-# Safarnama · सफ़रनामा
+# Hejje · ಹೆಜ್ಜೆ
 
-> **safarnāma** *(noun)*: the story of one's travels; a travelogue.
+> **hejje** *(Kannada, noun)*: a footstep; the mark you leave wherever you go.
 
-Safarnama is a travel map for the places you've been. Pick the **Indian states & union territories** and the **countries** you've visited from a searchable drop-down, or just tap them on the map, and watch them light up. It is fully **offline**, private (everything stays in your browser), and works on phones and desktops.
+Hejje is a travel map for the places you've been. Pick the **Indian states & union territories** and the **countries** you've visited from a searchable drop-down, or just tap them on the map, and watch them light up. It is fully **offline**, private (everything stays in your browser), and works on phones and desktops.
 
 ## Features
 

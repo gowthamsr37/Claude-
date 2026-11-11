@@ -1,7 +1,7 @@
-/* Safarnama service worker — makes the app work fully offline.
+/* Hejje service worker — makes the app work fully offline.
    Everything the app needs is precached on first visit; afterwards requests are
    served from the cache instantly and refreshed in the background. */
-const VERSION = 'safarnama-v1';
+const VERSION = 'hejje-v1';
 const ASSETS = [
   './',
   'index.html',

@@ -1,8 +1,8 @@
 {
-  "name": "safarnama",
+  "name": "hejje",
   "version": "1.0.0",
   "private": true,
-  "description": "Safarnama — an offline travel map to mark the Indian states and world countries you've visited.",
+  "description": "Hejje (ಹೆಜ್ಜೆ) — an offline travel map to mark the Indian states and world countries you've visited.",
   "scripts": {
     "build:data": "node scripts/build-data.mjs",
     "build:assets": "node scripts/build-assets.mjs",

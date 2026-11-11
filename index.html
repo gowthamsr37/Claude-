@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Safarnama · Your travel map</title>
-  <meta name="description" content="Safarnama is your personal travelogue map. Pick the Indian states and the countries you've visited and watch them light up. Private, beautiful, and works fully offline.">
+  <title>Hejje · Your travel map</title>
+  <meta name="description" content="Hejje (ಹೆಜ್ಜೆ, Kannada for footstep) is your personal travel map. Pick the Indian states and the countries you've visited and watch them light up. Private, beautiful, and works fully offline.">
   <meta name="theme-color" content="#070B16" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#F6F2EA" media="(prefers-color-scheme: light)">
   <meta name="color-scheme" content="dark light">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Safarnama">
+  <meta name="apple-mobile-web-app-title" content="Hejje">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta property="og:title" content="Safarnama · Your travel map">
+  <meta property="og:title" content="Hejje · Your travel map">
   <meta property="og:description" content="Mark the Indian states and countries you've visited and watch your map light up.">
   <meta property="og:image" content="icons/icon-512.png">
   <link rel="manifest" href="manifest.webmanifest">
@@ -26,7 +26,7 @@
     // Apply saved theme & palette before first paint (no flash).
     (function () {
       var s = {};
-      try { s = JSON.parse(localStorage.getItem('safarnama.v1') || '{}') || {}; } catch (e) {}
+      try { s = JSON.parse(localStorage.getItem('hejje.v1') || localStorage.getItem('safarnama.v1') || '{}') || {}; } catch (e) {}
       var r = document.documentElement;
       // Without a saved choice the page follows the system (or host) theme.
       if (s.theme === 'light' || s.theme === 'dark') r.setAttribute('data-theme', s.theme);
@@ -74,16 +74,14 @@
             </linearGradient>
           </defs>
           <path d="M32 3.5c-11.6 0-21 8.9-21 20.6C11 39.5 32 61 32 61s21-21.5 21-36.9C53 12.4 43.6 3.5 32 3.5z" fill="url(#brand-g)"/>
-          <circle cx="32" cy="24" r="10.5" fill="#0B1020"/>
-          <g fill="none" stroke="#FFE9D2" stroke-width="1.7" stroke-linecap="round">
-            <circle cx="32" cy="24" r="10.5"/>
-            <ellipse cx="32" cy="24" rx="4.3" ry="10.5"/>
-            <path d="M21.5 24h21M23.3 18.6h17.4M23.3 29.4h17.4"/>
+          <circle cx="32" cy="24" r="13.5" fill="#0B1020"/>
+          <g fill="#FFE9D2" transform="translate(32 24.8) rotate(-14) scale(.74) translate(-9.3 -15.5)">
+            <path d="M10 9C14.5 9 16 13 15.6 17C15.2 21 13.6 22.5 13.4 25C13.2 27.5 11.8 28.5 10 28.5C7.6 28.5 6.6 26.8 6.8 24.5C7 22 5.4 20 5.4 16.5C5.4 12 7 9 10 9Z"/><circle cx="13.8" cy="5.4" r="2.1"/><circle cx="10.4" cy="4.1" r="1.6"/><circle cx="7.6" cy="4.7" r="1.35"/><circle cx="5.4" cy="6.4" r="1.15"/><circle cx="3.9" cy="8.7" r=".95"/>
           </g>
         </svg>
         <span>
-          <span class="brand-name">Safarnama</span>
-          <span class="brand-sub">your travels, mapped</span>
+          <span class="brand-name">Hejje</span>
+          <span class="brand-sub">every step, mapped</span>
         </span>
       </div>
 
@@ -107,7 +105,7 @@
       <div class="side">
         <section class="hero">
           <p class="definition">
-            <b>safarnāma</b><span class="deva" lang="hi">सफ़रनामा</span><i>noun</i><span>the story of one's travels; a travelogue.</span>
+            <b>hejje</b><span class="native" lang="kn">ಹೆಜ್ಜೆ</span><i>noun · Kannada</i><span>a footstep; the mark you leave wherever you go.</span>
           </p>
           <h1>Every place you've been, <em>painted on the map.</em></h1>
           <p class="lede">Pick the states and countries you've visited from the list, or just tap the map. Your map stays on your device and works with no internet.</p>
@@ -240,7 +238,7 @@
 
   <div class="toasts" id="toasts" aria-live="polite"></div>
 
-  <noscript><p style="text-align:center;padding:2rem">Safarnama needs JavaScript to draw your map.</p></noscript>
+  <noscript><p style="text-align:center;padding:2rem">Hejje needs JavaScript to draw your map.</p></noscript>
 
   <script src="js/data/india.js"></script>
   <script src="js/data/world.js"></script>

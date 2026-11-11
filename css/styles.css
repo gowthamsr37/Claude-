@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Safarnama — styles
+   Hejje — styles
    Self-hosted fonts, theme tokens, layout, picker, map and stats.
    ========================================================================== */
 
@@ -283,7 +283,7 @@ button { cursor: pointer; background: none; border: 0; padding: 0; }
 .hero { padding: 14px 2px 4px; }
 .definition { font-size: 12.5px; color: var(--muted); margin: 0 0 12px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 9px; }
 .definition b { font-family: var(--font-display); font-style: italic; font-weight: 600; font-size: 16px; color: var(--text-2); }
-.definition .deva { font-size: 14.5px; color: var(--text-2); }
+.definition .native { font-size: 15px; color: var(--text-2); font-family: 'Noto Sans Kannada', 'Kannada Sangam MN', 'Nirmala UI', 'Tunga', var(--font-ui); }
 .definition i { font-style: italic; }
 .hero h1 {
   margin: 0; font-family: var(--font-display); font-weight: 560; font-size: clamp(32px, 3.1vw, 44px);

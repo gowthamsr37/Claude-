@@ -1,14 +1,15 @@
 /* ==========================================================================
-   Safarnama — app
+   Hejje (ಹೆಜ್ಜೆ, "footstep") — app
    Plain JavaScript, no dependencies, no network. Map geometry is pre-projected
    at build time (see scripts/build-data.mjs) and loaded from js/data/*.js.
    ========================================================================== */
 (function () {
   'use strict';
 
-  const DATA = window.SAFARNAMA_DATA || {};
+  const DATA = window.HEJJE_DATA || {};
   const NS = 'http://www.w3.org/2000/svg';
-  const STORE = 'safarnama.v1';
+  const STORE = 'hejje.v1';
+  const LEGACY_STORE = 'safarnama.v1'; // the app's earlier name; read once so nobody loses their map
   const $ = (sel, root) => (root || document).querySelector(sel);
   const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   // Running inside another page (e.g. a claude.ai artifact): no service worker,
@@ -89,7 +90,7 @@
 
   // -------------------------------------------------------------- state ---
   function loadStore() {
-    try { return JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (e) { return {}; }
+    try { return JSON.parse(localStorage.getItem(STORE) || localStorage.getItem(LEGACY_STORE) || '{}') || {}; } catch (e) { return {}; }
   }
   const saved = loadStore();
   const valid = (key, list) => new Set((Array.isArray(list) ? list : []).filter((id) => VIEWS[key].byId.has(id)));
@@ -1143,9 +1144,9 @@
     const url = location.href.split('#')[0] + hash;
     const ni = state.mine.india.size;
     const nw = [...state.mine.world].filter((id) => VIEWS.world.byId.get(id).sov).length;
-    const text = `My Safarnama: ${ni} of 36 Indian states & UTs and ${nw} countries visited.`;
+    const text = `My Hejje map: ${ni} of 36 Indian states & UTs and ${nw} countries visited.`;
     if (navigator.share && /^https?:/.test(location.protocol)) {
-      try { await navigator.share({ title: 'My Safarnama', text, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+      try { await navigator.share({ title: 'My Hejje map', text, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
     }
     try {
       await navigator.clipboard.writeText(url);
@@ -1265,13 +1266,17 @@
         pg.addColorStop(0, pal[0]); pg.addColorStop(0.52, pal[1]); pg.addColorStop(1, pal[2]);
         ctx.fillStyle = pg;
         ctx.fill(new Path2D('M32 3.5c-11.6 0-21 8.9-21 20.6C11 39.5 32 61 32 61s21-21.5 21-36.9C53 12.4 43.6 3.5 32 3.5z'));
-        ctx.fillStyle = '#0B1020'; ctx.beginPath(); ctx.arc(32, 24, 10.5, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = '#FFE9D2'; ctx.lineWidth = 1.7; ctx.stroke();
-        ctx.beginPath(); ctx.ellipse(32, 24, 4.3, 10.5, 0, 0, Math.PI * 2); ctx.moveTo(21.5, 24); ctx.lineTo(42.5, 24); ctx.stroke();
+        ctx.fillStyle = '#0B1020'; ctx.beginPath(); ctx.arc(32, 24, 13.5, 0, Math.PI * 2); ctx.fill();
+        ctx.translate(32, 24.8); ctx.rotate(-14 * Math.PI / 180); ctx.scale(0.74, 0.74); ctx.translate(-9.3, -15.5);
+        ctx.fillStyle = '#FFE9D2';
+        ctx.fill(new Path2D('M10 9C14.5 9 16 13 15.6 17C15.2 21 13.6 22.5 13.4 25C13.2 27.5 11.8 28.5 10 28.5C7.6 28.5 6.6 26.8 6.8 24.5C7 22 5.4 20 5.4 16.5C5.4 12 7 9 10 9Z'));
+        for (const [cx, cy, r] of [[13.8, 5.4, 2.1], [10.4, 4.1, 1.6], [7.6, 4.7, 1.35], [5.4, 6.4, 1.15], [3.9, 8.7, 0.95]]) {
+          ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.fill();
+        }
         ctx.restore();
         ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
         ctx.fillStyle = text; ctx.font = `650 46px ${SERIF}`;
-        ctx.fillText('Safarnama', x + 92, y);
+        ctx.fillText('Hejje', x + 92, y);
       };
       const drawHeadline = (x, y) => {
         ctx.textAlign = 'left';
@@ -1374,7 +1379,7 @@
       }
 
       const out = await new Promise((res) => cv.toBlob(res, 'image/png'));
-      const name = `safarnama-${v.key}-${new Date().toISOString().slice(0, 10)}.png`;
+      const name = `hejje-${v.key}-${new Date().toISOString().slice(0, 10)}.png`;
       const downloads = await downloadsCap;
       if (downloads) {
         try {
@@ -1388,7 +1393,7 @@
       const file = typeof File === 'function' ? new File([out], name, { type: 'image/png' }) : null;
       const coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
       if (coarse && file && navigator.canShare && navigator.canShare({ files: [file] })) {
-        try { await navigator.share({ files: [file], title: 'My Safarnama' }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+        try { await navigator.share({ files: [file], title: 'My Hejje map' }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
       }
       const a = document.createElement('a');
       a.href = URL.createObjectURL(out);
@@ -1426,7 +1431,7 @@
     txt.textContent = offline ? 'Offline · all good' : ready ? 'Offline ready' : 'Works offline';
   }
   window.addEventListener('online', netStatus);
-  window.addEventListener('offline', () => { netStatus(); toast('You are offline. Safarnama keeps working.', 'wifi'); });
+  window.addEventListener('offline', () => { netStatus(); toast('You are offline. Hejje keeps working.', 'wifi'); });
 
   if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !EMBEDDED) {
     const hadController = !!navigator.serviceWorker.controller;
