@@ -11,6 +11,13 @@
   const STORE = 'safarnama.v1';
   const $ = (sel, root) => (root || document).querySelector(sel);
   const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Running inside another page (e.g. a claude.ai artifact): no service worker,
+  // and the outer page owns the address bar.
+  const EMBEDDED = (() => { try { return window.self !== window.top; } catch (e) { return true; } })();
+  // claude.ai artifact runtime: lets the page hand the viewer a file to save.
+  const downloadsCap = window.claude && typeof window.claude.use === 'function'
+    ? Promise.resolve(window.claude.use('downloads')).catch(() => null)
+    : Promise.resolve(null);
 
   const PALETTES = [
     { id: 'sunset', name: 'Saffron sunset', c: ['#FFC857', '#FF6B6B', '#C44DFF'] },
@@ -511,6 +518,7 @@
     const before = state.mine[key];
     state.mine[key] = next;
     persist();
+    syncShareHash();
     refresh({ changed });
     if (!quiet) celebrate(key, before, next);
   }
@@ -956,7 +964,7 @@
   }
 
   // ------------------------------------------------------------ toasts ---
-  function toast(msg, ico = 'check', action) {
+  function toast(msg, ico = 'check', action, ms) {
     const box = $('#toasts');
     const t = document.createElement('div');
     t.className = 'toast';
@@ -979,7 +987,7 @@
       t.classList.add('out');
       setTimeout(() => t.remove(), 320);
     }
-    setTimeout(dismiss, action ? 6000 : 3200);
+    setTimeout(dismiss, ms || (action ? 6000 : 3200));
   }
 
   // ------------------------------------------------------- view switch ---
@@ -1058,10 +1066,13 @@
   // ---------------------------------------------------- theme & palette ---
   const root = document.documentElement;
   const mqLight = window.matchMedia ? matchMedia('(prefers-color-scheme: light)') : null;
-  function currentTheme() { return state.theme || (mqLight && mqLight.matches ? 'light' : 'dark'); }
+  function currentTheme() {
+    const attr = root.getAttribute('data-theme');
+    return state.theme || (attr === 'light' || attr === 'dark' ? attr : (mqLight && mqLight.matches ? 'light' : 'dark'));
+  }
   function applyTheme() {
+    if (state.theme) root.setAttribute('data-theme', state.theme);
     const t = currentTheme();
-    root.setAttribute('data-theme', t);
     const btn = $('#themeBtn');
     btn.innerHTML = `<svg><use href="#i-${t === 'light' ? 'moon' : 'sun'}"/></svg>`;
     btn.setAttribute('aria-label', `Switch to ${t === 'light' ? 'dark' : 'light'} theme`);
@@ -1072,6 +1083,10 @@
     applyTheme(); persist();
   });
   if (mqLight && mqLight.addEventListener) mqLight.addEventListener('change', () => { if (!state.theme) applyTheme(); });
+  // A host page may switch data-theme on us; keep the button and glow in step.
+  if (window.MutationObserver) {
+    new MutationObserver(() => { if (!state.theme) applyTheme(); }).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+  }
 
   function renderSwatches() {
     const box = $('#swatches');
@@ -1090,24 +1105,41 @@
   });
 
   // ----------------------------------------------------- share & import ---
-  function encodeShare() {
-    const i = [...state.mine.india].sort().join('');
-    const w = [...state.mine.world].sort().join('');
-    return `#i=${i}&w=${w}`;
+  // Share links carry the map in a plain hash: #s-<India codes>-<world codes>,
+  // e.g. #s-KLMP-FRAJPN (2-letter state codes, 3-letter country codes).
+  function encodeShare(src = state.mine) {
+    return `#s-${[...src.india].sort().join('')}-${[...src.world].sort().join('')}`;
   }
   function decodeShare(hash) {
     const m = /^#?(.*)$/.exec(hash || '')[1];
-    if (!/(^|&)(i|w)=/.test(m)) return null;
-    const params = new URLSearchParams(m);
     const chunk = (s, n) => (s || '').toUpperCase().match(new RegExp(`.{1,${n}}`, 'g')) || [];
-    return {
-      india: valid('india', chunk(params.get('i'), 2)),
-      world: valid('world', chunk(params.get('w'), 3)),
-    };
+    let i, w;
+    const plain = /^s-([A-Za-z]*)-([A-Za-z]*)$/.exec(m);
+    if (plain) { i = plain[1]; w = plain[2]; } else if (/(^|&)(i|w)=/.test(m)) {
+      const params = new URLSearchParams(m); // older #i=..&w=.. links
+      i = params.get('i'); w = params.get('w');
+    } else return null;
+    return { india: valid('india', chunk(i, 2)), world: valid('world', chunk(w, 3)) };
+  }
+  const sameSet = (a, b) => a.size === b.size && [...a].every((x) => b.has(x));
+  const isMine = (sh) => sameSet(sh.india, state.mine.india) && sameSet(sh.world, state.mine.world);
+  // Keep an existing share hash in step with the map, so the address is always current.
+  function syncShareHash() {
+    if (state.shared || !/^#s-/.test(location.hash)) return;
+    const h = encodeShare();
+    if (location.hash !== h) location.replace(h);
   }
 
   async function share() {
-    const url = location.href.split('#')[0] + encodeShare();
+    const hash = encodeShare();
+    if (EMBEDDED) {
+      // The outer page owns the real link: put the map in the hash, which its
+      // address bar and Share menu pick up.
+      if (location.hash !== hash) location.replace(hash);
+      toast('Your map is now in this page’s link. Copy it from the address bar or the Share menu.', 'link', null, 7000);
+      return;
+    }
+    const url = location.href.split('#')[0] + hash;
     const ni = state.mine.india.size;
     const nw = [...state.mine.world].filter((id) => VIEWS.world.byId.get(id).sov).length;
     const text = `My Safarnama: ${ni} of 36 Indian states & UTs and ${nw} countries visited.`;
@@ -1120,7 +1152,7 @@
     } catch (e) {
       const ta = document.createElement('textarea');
       ta.value = url; document.body.appendChild(ta); ta.select();
-      try { document.execCommand('copy'); toast('Link copied', 'link'); } catch (err) { prompt('Copy this link', url); }
+      try { document.execCommand('copy'); toast('Link copied', 'link'); } catch (err) { toast('Copy this link from the address bar.', 'link'); }
       ta.remove();
     }
   }
@@ -1137,7 +1169,8 @@
     }
     state.shared = null;
     $('#sharedBanner').hidden = true;
-    history.replaceState(null, '', location.pathname + location.search);
+    if (EMBEDDED) { if (location.hash) location.replace(adopt ? encodeShare() : '#'); }
+    else history.replaceState(null, '', location.pathname + location.search);
     persist();
     $('#mapSub').textContent = VIEWS[state.view].sub;
     refresh();
@@ -1339,6 +1372,16 @@
 
       const out = await new Promise((res) => cv.toBlob(res, 'image/png'));
       const name = `safarnama-${v.key}-${new Date().toISOString().slice(0, 10)}.png`;
+      const downloads = await downloadsCap;
+      if (downloads) {
+        try {
+          await downloads.save({ filename: name, data: out });
+          toast('Image saved. Ready to share!', 'download');
+        } catch (e) {
+          if (!e || e.code !== 'declined') toast('Saving files isn’t available here.', 'x');
+        }
+        return;
+      }
       const file = typeof File === 'function' ? new File([out], name, { type: 'image/png' }) : null;
       const coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
       if (coarse && file && navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -1370,7 +1413,7 @@
   window.addEventListener('online', netStatus);
   window.addEventListener('offline', () => { netStatus(); toast('You are offline. Safarnama keeps working.', 'wifi'); });
 
-  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
+  if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !EMBEDDED) {
     const hadController = !!navigator.serviceWorker.controller;
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('sw.js').then((reg) => {
@@ -1398,7 +1441,7 @@
     labelsBtn.setAttribute('aria-pressed', String(state.labels));
     picker.init();
     const sh = decodeShare(location.hash);
-    if (sh && (sh.india.size || sh.world.size)) enterShared(sh);
+    if (sh && (sh.india.size || sh.world.size) && !isMine(sh)) enterShared(sh);
     if (sh && !sh.india.size && sh.world.size && !saved.view) state.view = 'world';
     setView(state.view, { initial: true });
     // Pre-build the other map when idle so switching tabs is instant.
@@ -1408,7 +1451,7 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(moveIndicator);
     window.addEventListener('hashchange', () => {
       const s2 = decodeShare(location.hash);
-      if (s2 && (s2.india.size || s2.world.size)) { enterShared(s2); refresh(); setView(state.view); }
+      if (s2 && (s2.india.size || s2.world.size) && !isMine(s2) && !state.shared) { enterShared(s2); refresh(); setView(state.view); }
     });
   }
   boot();

@@ -28,8 +28,8 @@
       var s = {};
       try { s = JSON.parse(localStorage.getItem('safarnama.v1') || '{}') || {}; } catch (e) {}
       var r = document.documentElement;
-      var t = s.theme || (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-      r.setAttribute('data-theme', t);
+      // Without a saved choice the page follows the system (or host) theme.
+      if (s.theme === 'light' || s.theme === 'dark') r.setAttribute('data-theme', s.theme);
       r.setAttribute('data-palette', s.palette || 'sunset');
     })();
   </script>
@@ -64,7 +64,7 @@
 
   <header class="topbar">
     <div class="wrap">
-      <a class="brand" href="./" aria-label="Safarnama home">
+      <div class="brand">
         <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
           <defs>
             <linearGradient id="brand-g" x1="0.15" y1="0" x2="0.85" y2="1">
@@ -85,7 +85,7 @@
           <span class="brand-name">Safarnama</span>
           <span class="brand-sub">your travels, mapped</span>
         </span>
-      </a>
+      </div>
 
       <div class="actions">
         <span class="net-pill" id="netPill" title="Everything runs on your device">
