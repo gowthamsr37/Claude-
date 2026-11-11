@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Safarnama · Your travel map</title>
+  <meta name="description" content="Safarnama is your personal travelogue map. Pick the Indian states and the countries you've visited and watch them light up. Private, beautiful, and works fully offline.">
+  <meta name="theme-color" content="#070B16" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F6F2EA" media="(prefers-color-scheme: light)">
+  <meta name="color-scheme" content="dark light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Safarnama">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta property="og:title" content="Safarnama · Your travel map">
+  <meta property="og:description" content="Mark the Indian states and countries you've visited and watch your map light up.">
+  <meta property="og:image" content="icons/icon-512.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/icon-192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preload" href="fonts/plus-jakarta-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+  <script>
+    // Apply saved theme & palette before first paint (no flash).
+    (function () {
+      var s = {};
+      try { s = JSON.parse(localStorage.getItem('safarnama.v1') || '{}') || {}; } catch (e) {}
+      var r = document.documentElement;
+      var t = s.theme || (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      r.setAttribute('data-theme', t);
+      r.setAttribute('data-palette', s.palette || 'sunset');
+    })();
+  </script>
+</head>
+<body>
+  <div class="aura" aria-hidden="true"></div>
+
+  <!-- Icon sprite -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></symbol>
+      <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="m16 6-4-4-4 4"/><path d="M12 2v13"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-minus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/></symbol>
+      <symbol id="i-reset" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+      <symbol id="i-type" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+      <symbol id="i-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z"/></symbol>
+      <symbol id="i-award" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></symbol>
+      <symbol id="i-spark" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.2 6.3 6.3 2.2-6.3 2.2L12 19.5l-2.2-6.3L3.5 11l6.3-2.2z"/></symbol>
+      <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+      <symbol id="i-wifi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></symbol>
+    </defs>
+  </svg>
+
+  <header class="topbar">
+    <div class="wrap">
+      <a class="brand" href="./" aria-label="Safarnama home">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <linearGradient id="brand-g" x1="0.15" y1="0" x2="0.85" y2="1">
+              <stop offset="0" style="stop-color: var(--p1)"/>
+              <stop offset="0.52" style="stop-color: var(--p2)"/>
+              <stop offset="1" style="stop-color: var(--p3)"/>
+            </linearGradient>
+          </defs>
+          <path d="M32 3.5c-11.6 0-21 8.9-21 20.6C11 39.5 32 61 32 61s21-21.5 21-36.9C53 12.4 43.6 3.5 32 3.5z" fill="url(#brand-g)"/>
+          <circle cx="32" cy="24" r="10.5" fill="#0B1020"/>
+          <g fill="none" stroke="#FFE9D2" stroke-width="1.7" stroke-linecap="round">
+            <circle cx="32" cy="24" r="10.5"/>
+            <ellipse cx="32" cy="24" rx="4.3" ry="10.5"/>
+            <path d="M21.5 24h21M23.3 18.6h17.4M23.3 29.4h17.4"/>
+          </g>
+        </svg>
+        <span>
+          <span class="brand-name">Safarnama</span>
+          <span class="brand-sub">your travels, mapped</span>
+        </span>
+      </a>
+
+      <div class="actions">
+        <span class="net-pill" id="netPill" title="Everything runs on your device">
+          <span class="dot"></span><span id="netText">Works offline</span>
+        </span>
+        <div class="swatches" role="radiogroup" aria-label="Highlight colour" id="swatches"></div>
+        <button class="icon-btn" id="themeBtn" type="button" aria-label="Switch to light theme" title="Toggle light / dark">
+          <svg><use href="#i-sun"/></svg>
+        </button>
+        <button class="btn btn-ghost" id="shareBtn" type="button" title="Share a link to your map">
+          <svg><use href="#i-share"/></svg><span class="btn-label">Share</span>
+        </button>
+        <button class="btn btn-primary" id="exportBtn" type="button" title="Download your map as an image">
+          <svg><use href="#i-download"/></svg><span class="btn-label">Save image</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <div class="wrap">
+      <div class="side">
+        <section class="hero">
+          <p class="definition">
+            <b>safarnāma</b><span class="deva" lang="hi">सफ़रनामा</span><i>noun</i><span>the story of one's travels; a travelogue.</span>
+          </p>
+          <h1>Every place you've been, <em>painted on the map.</em></h1>
+          <p class="lede">Pick the states and countries you've visited from the list, or just tap the map. Your map stays on your device and works with no internet.</p>
+          <div class="shared" id="sharedBanner" hidden>
+            <p>You're looking at a map someone shared with you.</p>
+            <div class="row">
+              <button class="btn btn-primary" id="adoptShared" type="button">Make it mine</button>
+              <button class="btn btn-ghost" id="exitShared" type="button">Back to my map</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card card-pad picker-card" aria-labelledby="pickerLabel">
+          <div class="card-title">
+            <label id="pickerLabel" for="msInput">States &amp; UTs you've visited</label>
+          </div>
+          <div class="ms" id="picker">
+            <div class="ms-control" id="msControl">
+              <svg aria-hidden="true"><use href="#i-search"/></svg>
+              <input class="ms-input" id="msInput" type="search" autocomplete="off" spellcheck="false"
+                     role="combobox" aria-expanded="false" aria-controls="msList" aria-autocomplete="list"
+                     placeholder="Search a state, UT or city…">
+              <span class="ms-count" id="msCount">0 / 36</span>
+              <button class="ms-caret" id="msCaret" type="button" aria-label="Show all options" tabindex="-1">
+                <svg><use href="#i-chevron"/></svg>
+              </button>
+            </div>
+            <div class="ms-pop" id="msPop" hidden>
+              <div class="ms-tools">
+                <button class="link-btn" type="button" data-act="all">Select all</button>
+                <button class="link-btn" type="button" data-act="none">Clear all</button>
+                <span class="hint"><kbd>↑</kbd><kbd>↓</kbd> <kbd>Enter</kbd> <kbd>Esc</kbd></span>
+              </div>
+              <ul class="ms-list" id="msList" role="listbox" aria-multiselectable="true" aria-labelledby="pickerLabel"></ul>
+              <div class="ms-empty" id="msEmpty" hidden></div>
+            </div>
+          </div>
+
+          <div class="chips-head">
+            <span id="chipsLabel">Your list</span>
+            <button class="link-btn" type="button" id="clearBtn">Clear</button>
+          </div>
+          <div class="chips" id="chips" aria-live="polite"></div>
+        </section>
+
+        <section class="card card-pad stats-card" aria-labelledby="statsTitle" id="statsCard">
+          <div class="card-title"><h2 id="statsTitle">Your journey so far</h2></div>
+          <div class="stats-top">
+            <div class="ring" aria-hidden="true">
+              <svg viewBox="0 0 120 120">
+                <defs>
+                  <linearGradient id="ring-g" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" style="stop-color: var(--p1)"/>
+                    <stop offset="0.55" style="stop-color: var(--p2)"/>
+                    <stop offset="1" style="stop-color: var(--p3)"/>
+                  </linearGradient>
+                </defs>
+                <circle class="track" cx="60" cy="60" r="52" fill="none" stroke-width="10"/>
+                <circle class="bar" id="ringBar" cx="60" cy="60" r="52" fill="none" stroke="url(#ring-g)" stroke-width="10" stroke-linecap="round" stroke-dasharray="326.73" stroke-dashoffset="326.73"/>
+              </svg>
+              <div class="ring-center">
+                <div class="ring-pct" id="ringPct">0<small>%</small></div>
+                <div class="ring-sub" id="ringSub">of India</div>
+              </div>
+            </div>
+            <div class="kpis" id="kpis"></div>
+          </div>
+          <div class="rank" id="rank"></div>
+          <div class="breakdown" id="breakdown"></div>
+        </section>
+      </div>
+
+      <section class="card map-card" id="mapCard" aria-label="Map">
+        <div class="map-head">
+          <div class="tabs" role="tablist" aria-label="Choose map" id="tabs">
+            <span class="tab-indicator" aria-hidden="true"></span>
+            <button class="tab" role="tab" id="tab-india" data-view="india" aria-selected="true" aria-controls="stage">
+              <span class="tab-ico flag" aria-hidden="true">🇮🇳</span>
+              <span class="tab-text"><span class="tab-title">India</span><span class="tab-count" data-count="india">0 / 36<span class="unit"> states &amp; UTs</span></span></span>
+            </button>
+            <button class="tab" role="tab" id="tab-world" data-view="world" aria-selected="false" aria-controls="stage">
+              <span class="tab-ico" aria-hidden="true"><svg><use href="#i-globe"/></svg></span>
+              <span class="tab-text"><span class="tab-title">World</span><span class="tab-count" data-count="world">0 / 195<span class="unit"> countries</span></span></span>
+            </button>
+          </div>
+          <div class="map-tools">
+            <button class="toggle" id="labelsBtn" type="button" aria-pressed="true" title="Show or hide names">
+              <svg><use href="#i-type"/></svg><span>Labels</span>
+            </button>
+          </div>
+        </div>
+        <div class="stage" id="stage" data-view="india" role="tabpanel" aria-labelledby="tab-india">
+          <div class="stage-maps" id="stageMaps"></div>
+          <div class="zoom-dock">
+            <div class="zoom-group">
+              <button type="button" id="zoomIn" aria-label="Zoom in" title="Zoom in"><svg><use href="#i-plus"/></svg></button>
+              <button type="button" id="zoomOut" aria-label="Zoom out" title="Zoom out"><svg><use href="#i-minus"/></svg></button>
+              <button type="button" id="zoomReset" aria-label="Reset view" title="Reset view"><svg><use href="#i-reset"/></svg></button>
+            </div>
+          </div>
+          <div class="legend" aria-hidden="true">
+            <span><i class="lg-v"></i>Visited</span>
+            <span><i class="lg-n"></i>Not yet</span>
+          </div>
+          <div class="tip" id="tip" role="status" aria-live="off"></div>
+        </div>
+        <div class="map-foot">
+          <span id="mapSub">Tap a state to mark it visited</span>
+          <span class="map-hint" id="mapHint">Scroll or pinch to zoom · drag to pan</span>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p>Your map is saved only in this browser. No account, no tracking, no internet needed.</p>
+      <p>Boundaries: <a href="https://github.com/datameet/maps" target="_blank" rel="noopener">DataMeet India</a> (CC BY 4.0) &amp; <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener">Natural Earth</a>. Flags: <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener">Twemoji</a> (CC BY 4.0).</p>
+    </div>
+  </footer>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <noscript><p style="text-align:center;padding:2rem">Safarnama needs JavaScript to draw your map.</p></noscript>
+
+  <script src="js/data/india.js"></script>
+  <script src="js/data/world.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
