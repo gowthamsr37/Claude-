@@ -801,6 +801,7 @@
       }).join('');
     }
     lastChipSet[v.key] = new Set(visited);
+    renderDownload();
   }
   $('#chips').addEventListener('click', (e) => {
     const b = e.target.closest('button[data-id]');
@@ -1224,9 +1225,11 @@
     ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
   }
 
+  const dlButtons = () => [$('#mapDlBtn'), $('#dlBtn')];
   async function exportImage() {
-    const btn = $('#exportBtn');
-    btn.disabled = true;
+    const btns = dlButtons();
+    if (btns.some((b) => b.disabled)) return;
+    btns.forEach((b) => { b.disabled = true; });
     try {
       const v = VIEWS[state.view];
       const visited = visitedOf(v.key);
@@ -1397,10 +1400,22 @@
       console.error(err);
       toast('Could not create the image in this browser.', 'x');
     } finally {
-      btn.disabled = false;
+      btns.forEach((b) => { b.disabled = false; });
     }
   }
-  $('#exportBtn').addEventListener('click', exportImage);
+  for (const b of dlButtons()) b.addEventListener('click', exportImage);
+
+  // Show "Download India map" / "Download World map" only once that map has places on it.
+  function renderDownload() {
+    const v = VIEWS[state.view];
+    const n = visitedOf(v.key).size;
+    const mapBtn = $('#mapDlBtn'), cta = $('#dlCta');
+    mapBtn.hidden = n === 0;
+    cta.hidden = n === 0;
+    $('#mapDlWhat').textContent = ` ${v.title} map`;
+    mapBtn.setAttribute('aria-label', `Download ${v.title} map`);
+    $('#dlLabel').textContent = state.shared ? `Download this ${v.title} map` : `Download my ${v.title} map`;
+  }
 
   // ---------------------------------------------------------- offline ---
   function netStatus() {

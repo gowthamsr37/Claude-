@@ -98,9 +98,6 @@
         <button class="btn btn-ghost" id="shareBtn" type="button" title="Share a link to your map">
           <svg><use href="#i-share"/></svg><span class="btn-label">Share</span>
         </button>
-        <button class="btn btn-primary" id="exportBtn" type="button" title="Download your map as an image">
-          <svg><use href="#i-download"/></svg><span class="btn-label">Save image</span>
-        </button>
       </div>
     </div>
   </header>
@@ -154,6 +151,12 @@
             <button class="link-btn" type="button" id="clearBtn">Clear</button>
           </div>
           <div class="chips" id="chips" aria-live="polite"></div>
+          <div class="dl-cta" id="dlCta" hidden>
+            <button class="btn btn-primary dl-btn" id="dlBtn" type="button">
+              <svg><use href="#i-download"/></svg><span id="dlLabel">Download my India map</span>
+            </button>
+            <p class="dl-note" id="dlNote">PNG image of your highlighted map with your stats</p>
+          </div>
         </section>
 
         <section class="card card-pad stats-card" aria-labelledby="statsTitle" id="statsCard">
@@ -197,6 +200,9 @@
             </button>
           </div>
           <div class="map-tools">
+            <button class="btn btn-primary btn-dl" id="mapDlBtn" type="button" hidden title="Download this map as an image">
+              <svg><use href="#i-download"/></svg><span class="btn-label">Download<span class="dl-what" id="mapDlWhat"> India map</span></span>
+            </button>
             <button class="toggle" id="labelsBtn" type="button" aria-pressed="true" title="Show or hide names">
               <svg><use href="#i-type"/></svg><span>Labels</span>
             </button>
